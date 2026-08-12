@@ -219,6 +219,10 @@ export function getUser() {
     projectsAssigned: '—',
     reportsThisMonth: '—',
     claimsSubmitted: '—',
+    // تشخيص الألوان
+    companyPrimary: u.companyPrimary || '',
+    companySecondary: u.companySecondary || '',
+    companyColorDiag: u.companyColorDiag || '',
   };
 }
 
@@ -991,11 +995,17 @@ export async function verifyCompanyBarcode(barcode) {
     const rows = await searchRead(
       'res.company',
       [['company_barcode', '=', barcode.trim()]],
-      ['name', 'company_barcode'],
+      ['name', 'company_barcode', 'primary_color', 'secondary_color'],
       { limit: 1 }
     );
     if (rows && rows.length) {
-      return { valid: true, companyId: rows[0].id, companyName: rows[0].name || '' };
+      return {
+        valid: true,
+        companyId: rows[0].id,
+        companyName: rows[0].name || '',
+        primaryColor: rows[0].primary_color || '',
+        secondaryColor: rows[0].secondary_color || '',
+      };
     }
     return { valid: false, error: 'الباركود غير مرتبط بأي شركة. تأكد من مسح باركود الشركة الصحيح.' };
   } catch (e) {

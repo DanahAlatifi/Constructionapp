@@ -121,18 +121,9 @@ const ODOO_COLOR_MAP = {
 // طبّق ألوان الشركة على كائن colors (mutate — تنعكس على كل الشاشات)
 // primary/secondary: نصوص hex اختيارية | colorIndex: رقم فهرس Odoo اختياري
 export function applyCompanyColors(primary, secondary, colorIndex) {
-  // لو فيه لون واحد فقط (فهرس رقمي)، استخدمه كلون أساسي وثانوي معاً
-  let prim = hexToRgb(primary);
-  let sec = hexToRgb(secondary);
-
-  // إن لم يوجد hex واستُعمل الفهرس الرقمي
-  if (!prim && colorIndex != null && ODOO_COLOR_MAP[colorIndex]) {
-    const hex = ODOO_COLOR_MAP[colorIndex];
-    prim = hexToRgb(hex);
-    if (!sec) sec = hexToRgb(hex); // نفس اللون للثانوي إن لم يُحدّد
-    primary = hex;
-    if (!secondary) secondary = hex;
-  }
+  // يستخدم اللونين المستخرجين من شعار الشركة فقط (primary + secondary)
+  const prim = hexToRgb(primary);
+  const sec = hexToRgb(secondary);
 
   if (prim) {
     colors.accent = primary;

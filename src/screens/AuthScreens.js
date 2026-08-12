@@ -291,35 +291,36 @@ export function LoginScreen({ navigation }) {
       setLoading(true);
       try {
         await login(email, password);
-        // بعد الدخول (توجد جلسة الآن): تحقّق من الباركود الممسوح والشركة
+        // بعد الدخول (توجد جلسة الآن): تحقّق من الباركود الممسوح والشركة (اختياري فقط —
+        // لو ما فيه حقل company_barcode مخصص بأودو، هذا التحقق يُتجاهل بدون ما يوقف الدخول)
+        let barcodeColors = null;
         try {
           const scannedBarcode = await loadScannedBarcode();
           if (scannedBarcode) {
-            // 1) تحقّق أن الباركود يخص شركة موجودة
             const co = await verifyCompanyBarcode(scannedBarcode);
-            if (!co.valid) {
-              await logout();
-              setError(co.error || 'الباركود غير مرتبط بأي شركة.');
-              setLoading(false);
-              return;
+            if (co.valid) {
+              barcodeColors = { primary: co.primaryColor || '', secondary: co.secondaryColor || '' };
+              // تحقّق أن المستخدم تابع لنفس الشركة — لو فشل، تجاهل فقط (ما نوقف الدخول)
+              try {
+                const check = await verifyUserCompany(co.companyId);
+                if (!check.ok) barcodeColors = null;
+              } catch (e) {}
             }
-            // 2) تحقّق أن المستخدم تابع لنفس الشركة
-            const check = await verifyUserCompany(co.companyId);
-            if (!check.ok) {
-              await logout();
-              setError(check.error || 'هذا الحساب لا ينتمي إلى الشركة التي تم مسح باركودها.');
-              setLoading(false);
-              return;
-            }
+            // لو الباركود غير صالح (مثلاً الحقل company_barcode غير موجود بأودو)
+            // نتجاهل بصمت — الألوان الحقيقية رح تجي من شركة المستخدم مباشرة أدناه.
           }
         } catch (e) {}
         await markScanned();
-        // طبّق لون الشركة على التطبيق + احفظه لتطبيقه عند بداية التطبيق
+        // المصدر الأساسي للألوان: شركة المستخدم الحقيقية من أودو (Document Layout —
+        // primary_color/secondary_color على res.company)، اللي تُقرأ أصلاً داخل login().
+        // ألوان الباركود (لو صحّت) تُستخدم فقط كأولوية إضافية إن وُجدت.
+        const cu = getCurrentUser();
+        const prim = (barcodeColors && barcodeColors.primary) || (cu && cu.companyPrimary) || '';
+        const sec = (barcodeColors && barcodeColors.secondary) || (cu && cu.companySecondary) || '';
         try {
-          const cu = getCurrentUser();
-          if (cu && (cu.companyPrimary || cu.companySecondary || cu.companyColor != null)) {
-            applyCompanyColors(cu.companyPrimary, cu.companySecondary, cu.companyColor);
-            await saveCompanyColor(cu.companyColor, cu.companyPrimary, cu.companySecondary);
+          if (prim || sec) {
+            applyCompanyColors(prim, sec, null);
+            await saveCompanyColor(null, prim, sec);
           }
         } catch (e) {}
         await reloadProjects();

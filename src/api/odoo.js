@@ -119,6 +119,7 @@ export async function login(email, password) {
     email: result.username || email,
     companyName: Array.isArray(result.company_id) ? result.company_id[1] : '',
     partnerId: result.partner_id,
+    companyColorDiag: 'authenticate ok, uid=' + result.uid + ', company_id=' + JSON.stringify(result.company_id),
   };
 
   // جلب تفاصيل إضافية (جوال، هاتف) من res.users — حقول آمنة
@@ -157,27 +158,25 @@ export async function login(email, password) {
 
   CURRENT_USER.companyColorDiag = 'companyId=' + JSON.stringify(userCompanyId);
   if (userCompanyId) {
+    // اسم الشركة فقط — حقل 'color' الكانبان غير موجود أصلاً على res.company القياسية
+    // (تُرك سابقاً وكان يسبب فشل صامت). لا نحتاجه لأن مصدر الألوان الحقيقي هو primary/secondary أدناه.
     try {
-      const comps = await callKw('res.company', 'read', [[userCompanyId], ['name', 'color']]);
-      if (comps && comps[0]) {
-        const c = comps[0];
-        CURRENT_USER.companyColor = (c.color !== undefined && c.color !== false) ? c.color : null;
-        CURRENT_USER.companyName = c.name || CURRENT_USER.companyName;
-        CURRENT_USER.companyColorDiag = 'color=' + JSON.stringify(c.color) + ' name=' + (c.name || '؟');
-      } else {
-        CURRENT_USER.companyColorDiag = 'read رجّع فاضي';
-      }
-    } catch (e) {
-      CURRENT_USER.companyColorDiag = 'خطأ read: ' + (e.message || '');
-    }
-    // ألوان hex من الشركة (primary/secondary — مستخرجة من الشعار في Odoo)
+      const comps = await callKw('res.company', 'read', [[userCompanyId], ['name']]);
+      if (comps && comps[0]) CURRENT_USER.companyName = comps[0].name || CURRENT_USER.companyName;
+    } catch (e) {}
+    // ألوان hex من الشركة (Document Layout — primary_color/secondary_color على res.company القياسية)
     try {
       const comps2 = await callKw('res.company', 'read', [[userCompanyId], ['primary_color', 'secondary_color']]);
       if (comps2 && comps2[0]) {
         CURRENT_USER.companyPrimary = comps2[0].primary_color || '';
         CURRENT_USER.companySecondary = comps2[0].secondary_color || '';
+        CURRENT_USER.companyColorDiag = `companyId=${userCompanyId} primary=${comps2[0].primary_color} secondary=${comps2[0].secondary_color}`;
+      } else {
+        CURRENT_USER.companyColorDiag = `companyId=${userCompanyId} — read رجّع فاضي`;
       }
-    } catch (e) {}
+    } catch (e) {
+      CURRENT_USER.companyColorDiag = `companyId=${userCompanyId} — خطأ قراءة primary_color/secondary_color: ` + (e.message || e);
+    }
   } else {
     CURRENT_USER.companyColorDiag = 'لا يوجد companyId';
   }
