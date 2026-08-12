@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { T, L, H, Icon, Card } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { globalSearch } from '../api/services';
 import { useProject } from '../ProjectContext';
 
@@ -18,6 +18,7 @@ const TARGET_SCREEN = {
 };
 
 export default function SearchScreen({ navigation }) {
+  useThemeRedraw();
   const { projects, setPid } = useProject();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -144,8 +145,8 @@ export default function SearchScreen({ navigation }) {
 const styles = makeStyles(() => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 4, paddingBottom: 12 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
-  searchBox: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.neutral100, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 11 },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  searchBox: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 11, ...shadow.sm },
   searchInput: { flex: 1, fontSize: 13.5, color: colors.text, fontFamily: fonts.arabic, textAlign: 'right' },
   scroll: { paddingHorizontal: 20, paddingBottom: 30, gap: 4 },
   catLabel: { fontSize: 13, color: colors.neutral600, marginBottom: 8, marginTop: 8, paddingHorizontal: 4, textAlign: 'right' },

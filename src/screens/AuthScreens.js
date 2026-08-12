@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { T, L, H, Icon, Btn } from '../components';
-import { colors, space, radius, fonts, applyCompanyColors, makeStyles, authColors } from '../theme';
+import { colors, space, radius, fonts, applyCompanyColors, makeStyles, authColors, useThemeRedraw} from '../theme';
 import { SITE_IMG } from '../data/mock';
 import { login, logout, getCurrentUser } from '../api/odoo';
 import { verifyCompanyBarcode, verifyUserCompany } from '../api/services';
@@ -37,6 +37,7 @@ function Logo({ size = 48 }) {
 
 // ===== 01 الترحيب =====
 export function WelcomeScreen({ navigation }) {
+  useThemeRedraw();
   const [scannedBefore, setScannedBefore] = useState(null); // null = يفحص
 
   useEffect(() => {
@@ -340,6 +341,10 @@ export function LoginScreen({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           <SiteHeader height={270} gradient={['rgba(91,89,182,0.85)', 'rgba(58,56,139,0.95)', '#ffffff']}>
             <SafeAreaView style={{ flex: 1 }}>
+              <TouchableOpacity style={styles.backToScan} onPress={() => navigation.replace('Scan')}>
+                <Icon name="maximize" size={15} color={colors.white} />
+                <T weight="medium" style={styles.backToScanText}>مسح باركود آخر</T>
+              </TouchableOpacity>
               <View style={styles.headerBrand}>
                 <Logo size={64} />
                 <L style={styles.brandMid}>Contracting Lite</L>
@@ -403,6 +408,8 @@ const styles = makeStyles(() => ({
   permBtn: { marginTop: 20, backgroundColor: colors.white, borderRadius: radius.pill, paddingVertical: 14, paddingHorizontal: 30 },
   permBtnText: { color: authColors.ink, fontSize: 13.5 },
   scanBack: { margin: 20, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(253,252,250,0.18)', alignItems: 'center', justifyContent: 'center' },
+  backToScan: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', margin: 16, paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: 'rgba(255,255,255,0.18)' },
+  backToScanText: { fontSize: 12.5, color: colors.white },
   scanContent: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 60 },
   scanBrand: { fontSize: 16, color: colors.white, letterSpacing: 1, fontWeight: '600' },
   scanFrame: { width: 260, height: 260, borderRadius: 28, backgroundColor: 'rgba(253,252,250,0.06)', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },

@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, Dimensions } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Polyline, Line, Circle } from 'react-native-svg';
 import { T, L, H, Icon, Card } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { getDashboard } from '../api/services';
 import { useAsync } from '../api/useAsync';
 import { Loading, ErrorBox } from '../components/Async';
@@ -17,6 +17,7 @@ const short = (n) => {
 };
 
 export default function DashboardScreen({ navigation }) {
+  useThemeRedraw();
   const [period, setPeriod] = useState('all');
   const { data, loading, error, reload } = useAsync(() => getDashboard(period), [period], null);
 
@@ -255,7 +256,7 @@ const styles = makeStyles(() => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   scroll: { paddingHorizontal: 24, paddingBottom: 30, gap: 16 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 4 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   title: { fontSize: 22 },
   sub: { fontSize: 12.5, color: colors.neutral600 },
   periodRow: { flexDirection: 'row', gap: 8 },

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { T, L, H, Icon, Card } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { getPurchaseOrders, getSuppliers, createPurchaseOrder, purchaseOrderAction, nextPurchaseActions } from '../api/services';
 import { useProject, useProjectId, useCan } from '../ProjectContext';
 import { useAsync } from '../api/useAsync';
@@ -11,6 +11,7 @@ import { Loading, ErrorBox } from '../components/Async';
 const nf = (n) => new Intl.NumberFormat('en-US').format(Math.round(n || 0));
 
 export default function PurchaseOrdersScreen({ navigation }) {
+  useThemeRedraw();
   const { projects } = useProject();
   const { pid, realId } = useProjectId();
   const canCreate = useCan('purchase', 'create');
@@ -260,7 +261,7 @@ const styles = makeStyles(() => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   scroll: { paddingHorizontal: 24, paddingBottom: 30, gap: 16 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 4 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   title: { fontSize: 22 },
   sub: { fontSize: 12.5, color: colors.neutral600 },
   addBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accent2_800, alignItems: 'center', justifyContent: 'center' },
@@ -288,7 +289,7 @@ const styles = makeStyles(() => ({
   input: { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.neutral300, paddingHorizontal: 14, paddingVertical: 11, fontSize: 13.5, color: colors.text, fontFamily: fonts.arabic, textAlign: 'right' },
   inputSm: { backgroundColor: colors.card, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.neutral300, paddingVertical: 9, fontSize: 13.5, color: colors.text, fontFamily: fonts.latin, marginTop: 4 },
   miniLbl: { fontSize: 11, color: colors.neutral600, textAlign: 'center' },
-  lineTotal: { backgroundColor: colors.neutral100, borderRadius: radius.sm, paddingVertical: 10, marginTop: 4, alignItems: 'center' },
+  lineTotal: { backgroundColor: colors.card, borderRadius: radius.sm, paddingVertical: 10, marginTop: 4, alignItems: 'center', ...shadow.sm },
   lineTotalText: { fontSize: 13, fontWeight: '600', color: colors.accent2_800 },
   totalCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   totalVal: { fontSize: 20, fontWeight: '600', color: colors.text },

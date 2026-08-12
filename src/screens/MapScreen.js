@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { T, H, Icon } from '../components';
-import { colors, radius, fonts, makeStyles } from '../theme';
+import { colors, radius, fonts, makeStyles, useThemeRedraw} from '../theme';
 import { getProjectLocations } from '../api/services';
 import { useAsync } from '../api/useAsync';
 import { useProject } from '../ProjectContext';
@@ -21,6 +21,7 @@ function distanceKm(lat1, lon1, lat2, lon2) {
 }
 
 export default function MapScreen({ navigation }) {
+  useThemeRedraw();
   const { data: locations, loading, reload } = useAsync(() => getProjectLocations(), [], []);
   const { projects, setPid } = useProject();
   const [userLoc, setUserLoc] = useState(null);

@@ -3,9 +3,10 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, Refres
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { T, L, H, Icon } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { PROJECT_IMAGES, DEFAULT_PROJECT_IMAGE, nf } from '../data/mock';
 import { useProject } from '../ProjectContext';
+import { areNotificationsEnabled, onNotificationsChange, getNotificationsEnabledSync } from '../api/notifications';
 import { getAlerts } from '../api/services';
 import { useAsync } from '../api/useAsync';
 
@@ -40,7 +41,15 @@ function AlertRow({ icon, bg, fg, title, sub, onPress, sep }) {
 }
 
 export default function HomeScreen({ navigation }) {
+  useThemeRedraw();
   const { pid, setPid, projects, user, reloadProjects } = useProject();
+  const [notifOn, setNotifOn] = React.useState(getNotificationsEnabledSync());
+  // استمع لتغيّر حالة الإشعارات — تتحدّث الأيقونة فوراً في أي شاشة
+  React.useEffect(() => {
+    areNotificationsEnabled().then(setNotifOn);        // القيمة الأولية
+    const off = onNotificationsChange(setNotifOn);     // التحديثات الفورية
+    return off;
+  }, []);
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = async () => {
     setRefreshing(true);
@@ -73,10 +82,12 @@ export default function HomeScreen({ navigation }) {
             <H style={styles.hiTitle}>تابع مشروعك اليوم</H>
           </View>
           <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
-              <Icon name="bell" size={18} color={colors.neutral800} />
-              <View style={styles.bellDot} />
-            </TouchableOpacity>
+            {notifOn && (
+              <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
+                <Icon name="bell" size={18} color={colors.accent2_800} />
+                <View style={styles.bellDot} />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity style={styles.avatar} onPress={() => navigation.navigate('Profile')}>
               <T weight="semibold" style={styles.avatarText}>{firstName ? firstName.charAt(0) : 'م'}</T>
             </TouchableOpacity>
@@ -208,18 +219,18 @@ const styles = makeStyles(() => ({
   hi: { fontSize: 13, color: colors.neutral700 },
   hiTitle: { fontSize: 21, marginTop: 2 },
   headerIcons: { marginInlineStart: 'auto', flexDirection: 'row', alignItems: 'center', gap: 10 },
-  bell: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center' },
+  bell: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   bellDot: { position: 'absolute', top: 10, right: 12, width: 7, height: 7, borderRadius: 4, backgroundColor: colors.accent },
   avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.accent2_800, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.white, fontSize: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  search: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.neutral100, borderRadius: radius.pill, paddingVertical: 13, paddingHorizontal: 18 },
+  search: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.card, borderRadius: radius.pill, paddingVertical: 13, paddingHorizontal: 18, ...shadow.sm },
   searchText: { fontSize: 13.5, color: colors.neutral700 },
   menuBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accent2_800, alignItems: 'center', justifyContent: 'center' },
   quickGrid: { flexDirection: 'row', gap: 10 },
   quick: { flex: 1, borderRadius: 18, paddingVertical: 14, paddingHorizontal: 8, alignItems: 'center', gap: 8 },
   quickDark: { backgroundColor: colors.accent2_800 },
-  quickLight: { backgroundColor: colors.neutral100 },
+  quickLight: { backgroundColor: colors.card, ...shadow.sm },
   quickLabel: { fontSize: 11.5 },
   projCard: { borderRadius: 24, overflow: 'hidden', height: 230, backgroundColor: colors.neutral200 },
   projImg: { flex: 1 },

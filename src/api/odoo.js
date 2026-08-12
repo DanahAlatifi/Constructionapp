@@ -58,6 +58,11 @@ async function rpc(endpoint, params) {
   return data.result;
 }
 
+// نداء endpoint مخصّص (type='json') — للمسارات مثل /construction/register_push
+export async function rpcCall(endpoint, params = {}) {
+  return rpc(endpoint, params);
+}
+
 // ── كشف قاعدة البيانات تلقائياً ──
 let RESOLVED_DB = null;
 
@@ -165,7 +170,7 @@ export async function login(email, password) {
     } catch (e) {
       CURRENT_USER.companyColorDiag = 'خطأ read: ' + (e.message || '');
     }
-    // ألوان hex اختيارية
+    // ألوان hex من الشركة (primary/secondary — مستخرجة من الشعار في Odoo)
     try {
       const comps2 = await callKw('res.company', 'read', [[userCompanyId], ['primary_color', 'secondary_color']]);
       if (comps2 && comps2[0]) {

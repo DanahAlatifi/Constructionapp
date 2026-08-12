@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, Linkin
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { T, L, H, Icon, Card, Btn } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { STAGES, ACTIONS, PROJECT_IMAGES, claimStatusInfo, nf } from '../data/mock';
 import { useProject, useProjectId, useCan } from '../ProjectContext';
 import { getClaims, claimAction, nextClaimAction, getReportUrl, loadClaimLines, getClaimLines, downloadReport } from '../api/services';
@@ -26,6 +26,7 @@ function claimAmounts(c) {
 }
 
 export default function ClaimsScreen({ navigation }) {
+  useThemeRedraw();
   const { projects } = useProject();
   const { pid, realId } = useProjectId();
   const p = projects[pid] || projects[0];
@@ -192,7 +193,23 @@ function ClaimDetail({ claim, project, pid, onBack, navigation }) {
           <T style={styles.detailDesc}>مطالبة بالأعمال المنفَّذة خلال الفترة، بعد خصم المحتجزات واسترداد الدفعة المقدمة، وفق جدول الكميات المعتمد.</T>
         </View>
 
-        {/* المراحل العمودية المرقّمة */}
+        {/* بنود المستخلص — أولاً */}
+        {lines.length > 0 && (
+          <Card style={{ gap: 0 }}>
+            <T weight="semibold" style={{ fontSize: 14, color: colors.text, textAlign: 'right', marginBottom: 8 }}>بنود المستخلص ({lines.length})</T>
+            {lines.map((ln, i) => (
+              <View key={i} style={styles.lineRow}>
+                <View style={{ flex: 1 }}>
+                  <T weight="medium" style={styles.lineName}>{ln.itemNo ? `[${ln.itemNo}] ` : ''}{ln.name}</T>
+                  <L style={styles.lineQty}>هذه الفترة: {nf(ln.qtyPeriod)} · معتمد: {nf(ln.qtyCertified)}</L>
+                </View>
+                <L style={styles.lineAmt}>{nf(ln.amount)}</L>
+              </View>
+            ))}
+          </Card>
+        )}
+
+        {/* المراحل العمودية المرقّمة — الحالة */}
         <View style={{ marginTop: 4 }}>
           {STAGES.map((s, i) => {
             const done = claim.st >= i;
@@ -214,7 +231,7 @@ function ClaimDetail({ claim, project, pid, onBack, navigation }) {
           })}
         </View>
 
-        {/* التفصيل المالي */}
+        {/* التفصيل المالي — الإجمالي */}
         <Card style={styles.finCard}>
           <FinRow label="إجمالي الأعمال" value={nf(calc.gross)} />
           <FinRow label="المحتجزات" value={`- ${nf(calc.ret)}`} accent />
@@ -225,22 +242,6 @@ function ClaimDetail({ claim, project, pid, onBack, navigation }) {
             <L style={styles.netValue}>{nf(calc.net)} <T style={styles.netUnit}>ر.س</T></L>
           </View>
         </Card>
-
-        {/* بنود المستخلص */}
-        {lines.length > 0 && (
-          <Card style={{ gap: 0 }}>
-            <T weight="semibold" style={{ fontSize: 14, color: colors.text, textAlign: 'right', marginBottom: 8 }}>بنود المستخلص ({lines.length})</T>
-            {lines.map((ln, i) => (
-              <View key={i} style={styles.lineRow}>
-                <View style={{ flex: 1 }}>
-                  <T weight="medium" style={styles.lineName}>{ln.itemNo ? `[${ln.itemNo}] ` : ''}{ln.name}</T>
-                  <L style={styles.lineQty}>هذه الفترة: {nf(ln.qtyPeriod)} · معتمد: {nf(ln.qtyCertified)}</L>
-                </View>
-                <L style={styles.lineAmt}>{nf(ln.amount)}</L>
-              </View>
-            ))}
-          </Card>
-        )}
 
         {msg && (
           <View style={[styles.msgBox, { backgroundColor: msg.ok ? colors.accent2_100 : colors.accent100 }]}>
@@ -298,7 +299,7 @@ const styles = makeStyles(() => ({
 
   detailScroll: { paddingHorizontal: 22, paddingBottom: 28, gap: 18 },
   detailBar: { flexDirection: 'row', alignItems: 'center', paddingTop: 4 },
-  circleBtn: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center' },
+  circleBtn: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   detailImg: { borderRadius: 24, overflow: 'hidden', height: 190, backgroundColor: colors.neutral200 },
   detailStagePill: { position: 'absolute', bottom: 14, insetInlineStart: 16, left: 16, backgroundColor: 'rgba(253,252,250,0.94)', borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6 },
   detailStageText: { fontSize: 11.5, color: colors.text },

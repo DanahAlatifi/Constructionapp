@@ -69,7 +69,7 @@ function FloatingTabBar({ state, navigation }) {
               onPress={onPress}
               activeOpacity={0.7}
             >
-              <Icon name={icon} size={22} color={focused ? colors.accent2_800 : colors.neutral500} />
+              <Icon name={icon} size={22} color={focused ? colors.accent2_800 : colors.accent2_400} />
             </TouchableOpacity>
           );
         })}

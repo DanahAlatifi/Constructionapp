@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { T, L, H, Icon, Card } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { useProject } from '../ProjectContext';
 import { currentUser as fallbackUser } from '../data/mock';
 import { getUserStats, updateUserProfile } from '../api/services';
 import { useAsync } from '../api/useAsync';
 
 export default function ProfileScreen({ navigation }) {
+  useThemeRedraw();
   const { user: ctxUser, reloadProjects } = useProject();
   const currentUser = ctxUser || fallbackUser;
   const roleLabel = currentUser.roleKey === 'officer' ? 'مسؤول — يعتمد المستخلصات' : 'عرض فقط';
@@ -182,7 +183,7 @@ const styles = makeStyles(() => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   scroll: { paddingHorizontal: 24, paddingBottom: 24, gap: 16 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 4 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   title: { fontSize: 22 },
   editBtn: { marginInlineStart: 'auto', flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: colors.accent2_100, borderRadius: radius.pill, paddingVertical: 8, paddingHorizontal: 14 },
   editBtnText: { fontSize: 13, color: colors.accent2_800 },
@@ -206,7 +207,7 @@ const styles = makeStyles(() => ({
   modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
   modalTitle: { fontSize: 19 },
   fieldLabel: { fontSize: 13, color: colors.neutral700, textAlign: 'right', marginTop: 10, marginBottom: 4 },
-  input: { backgroundColor: colors.neutral100, borderRadius: radius.md, paddingHorizontal: 16, paddingVertical: 13, fontSize: 14, color: colors.text, fontFamily: fonts.arabic, textAlign: 'right' },
+  input: { backgroundColor: colors.card, borderRadius: radius.md, paddingHorizontal: 16, paddingVertical: 13, fontSize: 14, color: colors.text, fontFamily: fonts.arabic, textAlign: 'right', ...shadow.sm },
   securityRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, justifyContent: 'flex-end' },
   securityHint: { fontSize: 11.5, color: colors.neutral600, textAlign: 'right' },
   errRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.accent100, borderRadius: radius.sm, padding: 11, marginTop: 12 },

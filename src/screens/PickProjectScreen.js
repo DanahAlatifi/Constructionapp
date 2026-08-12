@@ -3,11 +3,12 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, Refres
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { T, L, H, Icon } from '../components';
-import { colors, space, radius, fonts, makeStyles } from '../theme';
+import { colors, space, radius, fonts, makeStyles, useThemeRedraw} from '../theme';
 import { PROJECT_IMAGES, DEFAULT_PROJECT_IMAGE } from '../data/mock';
 import { useProject } from '../ProjectContext';
 
 export default function PickProjectScreen({ navigation }) {
+  useThemeRedraw();
   const { setPid, projects, loading, reloadProjects } = useProject();
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = async () => { setRefreshing(true); try { await reloadProjects(); } catch (e) {} setRefreshing(false); };

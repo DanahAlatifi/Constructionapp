@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { T, L, H, Icon, Card } from '../components';
-import { colors, space, radius, fonts, shadow, resetColors, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, resetColors, makeStyles, useThemeRedraw} from '../theme';
 import { DOCS } from '../data/mock';
 import { useProject } from '../ProjectContext';
+import { areNotificationsEnabled, registerForPushNotifications, disableNotifications } from '../api/notifications';
 import { logout } from '../api/odoo';
 import { USE_API } from '../api/config';
 
@@ -29,8 +30,28 @@ function LinkRow({ icon, iconBg, iconFg, avatar, title, sub, onPress, sep }) {
 }
 
 export default function MoreScreen({ navigation }) {
+  useThemeRedraw();
   const { user, projects } = useProject();
   const userName = (user && user.name) ? user.name : '';
+
+  const [notifOn, setNotifOn] = React.useState(false);
+  React.useEffect(() => {
+    areNotificationsEnabled().then(setNotifOn);
+  }, []);
+  const toggleNotifications = async (val) => {
+    if (val) {
+      const res = await registerForPushNotifications();
+      if (res.ok) {
+        setNotifOn(true);
+      } else {
+        setNotifOn(false);
+        Alert.alert('الإشعارات', res.error || 'تعذّر تفعيل الإشعارات. تأكد من السماح بها في إعدادات الجهاز.');
+      }
+    } else {
+      await disableNotifications();
+      setNotifOn(false);
+    }
+  };
 
   const doLogout = () => {
     Alert.alert('تسجيل الخروج', 'هل تريد تسجيل الخروج من حسابك؟', [
@@ -94,7 +115,13 @@ export default function MoreScreen({ navigation }) {
         <Card style={styles.settingsCard}>
           <SettingRow label="نسبة المحتجزات" value="5%" sep />
           <SettingRow label="استرداد الدفعة المقدمة" value="10%" sep />
-          <SettingRow label="الإشعارات" value="مُفعّلة" sep />
+          <View style={styles.toggleRow}>
+            <T style={styles.toggleLabel}>الإشعارات</T>
+            <Switch value={notifOn} onValueChange={toggleNotifications}
+              trackColor={{ false: colors.neutral300, true: colors.accent2_400 }}
+              thumbColor={notifOn ? colors.accent2_800 : colors.neutral100} />
+          </View>
+          <View style={styles.settingSep} />
           <SettingRow label="اللغة" value="العربية" />
         </Card>
 
@@ -134,6 +161,9 @@ const styles = makeStyles(() => ({
   sep: { height: 1, backgroundColor: colors.divider8 },
   sectionLbl: { fontSize: 12.5, color: colors.neutral600, paddingHorizontal: 4, marginTop: 6, textAlign: 'right' },
   settingsCard: { paddingVertical: 6, paddingHorizontal: 20 },
+  toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12 },
+  toggleLabel: { fontSize: 13.5, color: colors.text, textAlign: 'right' },
+  settingSep: { height: 1, backgroundColor: colors.divider8 },
   setRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14 },
   setLabel: { fontSize: 14, color: colors.text },
   setValue: { fontSize: 13, color: colors.accent700, fontWeight: '600' },

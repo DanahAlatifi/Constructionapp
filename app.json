@@ -45,7 +45,8 @@
         {
           "cameraPermission": "يسمح للتطبيق باستخدام الكاميرا لمسح الباركود."
         }
-      ]
+      ],
+      "expo-notifications"
     ]
   }
 }

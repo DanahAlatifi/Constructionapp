@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, Linkin
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { T, L, H, Icon, Card, Bar, Btn } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 import { PROJECT_IMAGES, DEFAULT_PROJECT_IMAGE, ROLES, nf } from '../data/mock';
 import { useProject, useProjectId, useCan } from '../ProjectContext';
 import { getSubcontractors, getGuarantees, getRetention, getProjectDetail, releaseRetention, getReportUrl, REPORTS_LIST, createGuarantee, GUARANTEE_TYPES, getNotifications, getSubClaims, subClaimAction, nextSubClaimAction, subClaimStatusLabel, guaranteeReleaseAction, getRetentionReleases, retentionReleaseAction, nextRetentionAction, getSubRetentions, createSubRetention, subRetentionAction, nextSubRetentionAction, getSubClaimLines, downloadReport } from '../api/services';
@@ -37,6 +37,7 @@ function Pill({ label, tone }) {
 
 // ===== 13 كل المشاريع =====
 export function AllProjectsScreen({ navigation, route }) {
+  useThemeRedraw();
   const { setPid, projects, pid: currentPid } = useProject();
   const [query, setQuery] = useState('');
   const totalValue = projects.reduce((sum, p) => sum + (p.value || 0), 0);
@@ -541,7 +542,7 @@ export function GuaranteesScreen({ navigation }) {
                 </View>
                 <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                   <TouchableOpacity
-                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.neutral100, borderRadius: radius.md, paddingVertical: 12 }}
+                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.card, borderRadius: radius.md, paddingVertical: 12, ...shadow.sm }}
                     onPress={() => { if (gid) downloadReport('pt_construction_lite.report_guarantee', gid, 'guarantee'); }}>
                     <Icon name="download" size={16} color={colors.accent2_800} />
                     <T weight="medium" style={{ fontSize: 13, color: colors.accent2_800 }}>تصدير PDF</T>
@@ -703,7 +704,7 @@ const styles = makeStyles(() => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   scroll: { paddingHorizontal: 24, paddingBottom: 24, gap: 16 },
   backHead: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 4 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   backTitle: { fontSize: 22 },
   backSub: { fontSize: 12.5, color: colors.neutral600 },
   filterRow: { flexDirection: 'row', gap: 8 },
@@ -748,7 +749,7 @@ const styles = makeStyles(() => ({
   empty: { alignItems: 'center', paddingVertical: 28 },
   emptyText: { color: colors.neutral600 },
   infoText: { fontSize: 13, lineHeight: 22, color: colors.neutral600, textAlign: 'right' },
-  subClaimRow: { gap: 8, backgroundColor: colors.neutral100, borderRadius: radius.md, padding: 12 },
+  subClaimRow: { gap: 8, backgroundColor: colors.card, borderRadius: radius.md, padding: 12, ...shadow.sm },
   retTotal: { fontSize: 24, fontWeight: '600', color: colors.text },
   retBar: { height: 8, borderRadius: radius.pill, backgroundColor: colors.neutral200, overflow: 'hidden' },
   retBarFill: { height: 8, borderRadius: radius.pill, backgroundColor: colors.accent2_500 },
@@ -767,7 +768,7 @@ const styles = makeStyles(() => ({
   docIcon: { width: 40, height: 40, borderRadius: 14, backgroundColor: colors.accent100, alignItems: 'center', justifyContent: 'center' },
   docTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   docTitle: { fontSize: 14, color: colors.text, flex: 1, textAlign: 'right' },
-  docCat: { backgroundColor: colors.neutral100, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 },
+  docCat: { backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3, ...shadow.sm },
   docCatText: { fontSize: 10, color: colors.neutral700 },
   docNote: { fontSize: 12, lineHeight: 20, color: colors.neutral600, textAlign: 'right' },
   shareHint: { fontSize: 13, color: colors.neutral600, textAlign: 'right' },
@@ -909,7 +910,7 @@ export function NotificationsScreen({ navigation }) {
 }
 
 const apSearchStyles = makeStyles(() => ({
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.neutral100, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 12 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 12, ...shadow.sm },
   searchInput: { flex: 1, fontSize: 13.5, color: colors.text, fontFamily: fonts.arabic, textAlign: 'right' },
 }));
 

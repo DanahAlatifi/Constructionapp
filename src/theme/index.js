@@ -1,51 +1,52 @@
 // نظام تصميم Organic — القيم الدقيقة مستخرجة من ملف تصميم Contracting Lite
+import * as _React from 'react';
 import { StyleSheet } from 'react-native';
 export const colors = {
   // الرموز الأساسية
   bg: '#f7f8fa',          // --color-bg خلفية الصفحة (أبيض مائل لرمادي فاتح جداً)
   surface: '#eef0f3',     // --color-surface السطح
   card: '#ffffff',        // كرت الشاشة الأبيض
-  text: '#201e1d',        // --color-text
-  accent: '#c67139',      // --color-accent (تراكوتا)
-  accent2: '#7a8a5e',     // --color-accent-2 (زيتوني)
+  text: '#1a1a2e',        // --color-text
+  accent: '#4947ae',      // --color-accent (أزرق الشعار)
+  accent2: '#4947ae',     // --color-accent-2 (أزرق الشعار)
 
-  // سلّم الحياد (neutral ramp)
-  neutral100: '#f9f4ed',
-  neutral200: '#eee7db',
-  neutral300: '#dcd3c4',
-  neutral400: '#c0b6a5',
-  neutral500: '#a19786',
-  neutral600: '#82796a',
-  neutral700: '#645c50',
-  neutral800: '#474238',
-  neutral900: '#2e2b25',
+  // سلّم الحياد (رمادي محايد — بدون بيج)
+  neutral100: '#e1e1e3',
+  neutral200: '#cfcfd2',
+  neutral300: '#bababe',
+  neutral400: '#a2a2a7',
+  neutral500: '#8e8e93',
+  neutral600: '#757578',
+  neutral700: '#5a5a5d',
+  neutral800: '#3f3f41',
+  neutral900: '#2a2a2b',
 
-  // سلّم التراكوتا (accent ramp)
-  accent100: '#fff2eb',
-  accent200: '#ffe1d0',
-  accent300: '#ffc6a5',
-  accent400: '#f6a06b',
-  accent500: '#d67f48',
-  accent600: '#b2622d',
-  accent700: '#8c491a',
-  accent800: '#643312',
-  accent900: '#402310',
+  // سلّم الأزرق (accent ramp)
+  accent100: '#ececf6',
+  accent200: '#cccbe8',
+  accent300: '#a4a3d6',
+  accent400: '#7876c3',
+  accent500: '#5250b2',
+  accent600: '#3e3c93',
+  accent700: '#2f2e71',
+  accent800: '#232253',
+  accent900: '#171637',
 
-  // سلّم الزيتوني (accent-2 ramp)
-  accent2_100: '#f0fae1',
-  accent2_200: '#e1eecc',
-  accent2_300: '#ccdbb2',
-  accent2_400: '#aebf92',
-  accent2_500: '#8fa073',
-  accent2_600: '#728157',
-  accent2_700: '#56633f',
-  accent2_800: '#3d472b',   // الأخضر الداكن الأساسي للأزرار/الأفتار
-  accent2_900: '#272e1b',
+  // سلّم الأزرق (accent-2 ramp)
+  accent2_100: '#ececf6',
+  accent2_200: '#cccbe8',
+  accent2_300: '#a4a3d6',
+  accent2_400: '#7876c3',
+  accent2_500: '#5250b2',
+  accent2_600: '#3e3c93',
+  accent2_700: '#2f2e71',
+  accent2_800: '#232253',   // الأزرق الداكن الأساسي للأزرار/الأفتار
+  accent2_900: '#171637',
 
-  white: '#fdfcfa',
-  ink: '#2b3220',           // أخضر مسود للنصوص فوق الفاتح
-  divider: 'rgba(32,30,29,0.16)',   // --color-divider
-  divider8: 'rgba(32,30,29,0.08)',
+  white: '#ffffff',
+  ink: '#232253',           // أزرق مسود للنصوص فوق الفاتح
+  divider: 'rgba(26,26,46,0.16)',   // --color-divider
+  divider8: 'rgba(26,26,46,0.08)',
 };
 
 // ألوان ثابتة لشاشات الدخول — لا تتأثر بلون الشركة أبداً
@@ -165,6 +166,15 @@ export function notifyThemeChange() {
   _themeListeners.forEach((fn) => { try { fn(); } catch (e) {} });
 }
 
+// خطّاف يعيد رسم المكوّن فوراً عند تغيّر لون الشركة (لتتحدّث الألوان تلقائياً)
+export function useThemeRedraw() {
+  const [, setTick] = _React.useState(0);
+  _React.useEffect(() => {
+    const off = onThemeChange(() => setTick((t) => t + 1));
+    return off;
+  }, []);
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  makeStyles — أنماط ديناميكية تُعاد بناؤها عند تغيّر لون الشركة
 //  الاستخدام: const styles = makeStyles(() => ({ ... }))
@@ -206,10 +216,10 @@ export const fonts = {
 };
 
 export const shadow = {
-  sm: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.14, shadowRadius: 2, elevation: 1 },
-  md: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.16, shadowRadius: 10, elevation: 3 },
-  lg: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.22, shadowRadius: 32, elevation: 8 },
-  card: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 2 },
+  sm: { shadowColor: '#000000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.12, shadowRadius: 3, elevation: 2 },
+  md: { shadowColor: '#000000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.14, shadowRadius: 10, elevation: 3 },
+  lg: { shadowColor: '#000000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.2, shadowRadius: 32, elevation: 8 },
+  card: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 2 },
 };
 
 export default { colors, space, radius, fonts, shadow };

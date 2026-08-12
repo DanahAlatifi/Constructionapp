@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { T, L, H, Icon, Card, Bar } from '../components';
-import { colors, space, radius, fonts, shadow, makeStyles } from '../theme';
+import { colors, space, radius, fonts, shadow, makeStyles, useThemeRedraw} from '../theme';
 // البيانات كلها من Odoo عبر الخدمات
 import { useProject, useProjectId, useCan } from '../ProjectContext';
 import { getDailyReports, getProjectDetail, createDailyReport, updateDailyReport, uploadAttachment, WEATHER_OPTIONS } from '../api/services';
@@ -11,6 +11,7 @@ import { useAsync } from '../api/useAsync';
 import { Loading, ErrorBox } from '../components/Async';
 
 export default function SiteScreen() {
+  useThemeRedraw();
   const { projects } = useProject();
   const { pid, realId } = useProjectId();
   const p = projects[pid] || projects[0];
@@ -399,7 +400,7 @@ const styles = makeStyles(() => ({
   boqQty: { fontSize: 11, color: colors.neutral600, textAlign: 'right' },
 
   repHead: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 4 },
-  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   repTitle: { fontSize: 22 },
   grid2: { flexDirection: 'row', flexWrap: 'wrap' },
   grid2Item: { width: '50%', gap: 4, paddingVertical: 9 },
@@ -407,7 +408,7 @@ const styles = makeStyles(() => ({
   savedCard: { backgroundColor: colors.accent2_200 },
   savedText: { fontSize: 13, lineHeight: 22, color: colors.accent2_800, textAlign: 'right' },
   counter: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  counterBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.neutral100, alignItems: 'center', justifyContent: 'center' },
+  counterBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', ...shadow.sm },
   counterVal: { fontSize: 26, fontWeight: '600', color: colors.text, minWidth: 40, textAlign: 'center' },
   counterHint: { fontSize: 12, color: colors.neutral600, marginInlineStart: 'auto', textAlign: 'right', flex: 1 },
   repBody: { fontSize: 13, lineHeight: 22, color: colors.neutral700, textAlign: 'right' },
@@ -431,7 +432,7 @@ const styles = makeStyles(() => ({
   reqHint: { fontSize: 11, color: colors.accent700, textAlign: 'right', marginTop: 2 },
   cardRequired: { borderWidth: 1, borderColor: colors.accent },
   inputRO: { color: colors.neutral700 },
-  roBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.neutral100, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5 },
+  roBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 5, ...shadow.sm },
   roBadgeText: { fontSize: 11, color: colors.neutral700 },
   roNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.accent2_100, borderRadius: radius.md, padding: 12 },
   roNoticeText: { flex: 1, fontSize: 12.5, color: colors.accent2_800, textAlign: 'right' },
