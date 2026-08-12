@@ -1,0 +1,215 @@
+// نظام تصميم Organic — القيم الدقيقة مستخرجة من ملف تصميم Contracting Lite
+import { StyleSheet } from 'react-native';
+export const colors = {
+  // الرموز الأساسية
+  bg: '#f7f8fa',          // --color-bg خلفية الصفحة (أبيض مائل لرمادي فاتح جداً)
+  surface: '#eef0f3',     // --color-surface السطح
+  card: '#ffffff',        // كرت الشاشة الأبيض
+  text: '#201e1d',        // --color-text
+  accent: '#c67139',      // --color-accent (تراكوتا)
+  accent2: '#7a8a5e',     // --color-accent-2 (زيتوني)
+
+  // سلّم الحياد (neutral ramp)
+  neutral100: '#f9f4ed',
+  neutral200: '#eee7db',
+  neutral300: '#dcd3c4',
+  neutral400: '#c0b6a5',
+  neutral500: '#a19786',
+  neutral600: '#82796a',
+  neutral700: '#645c50',
+  neutral800: '#474238',
+  neutral900: '#2e2b25',
+
+  // سلّم التراكوتا (accent ramp)
+  accent100: '#fff2eb',
+  accent200: '#ffe1d0',
+  accent300: '#ffc6a5',
+  accent400: '#f6a06b',
+  accent500: '#d67f48',
+  accent600: '#b2622d',
+  accent700: '#8c491a',
+  accent800: '#643312',
+  accent900: '#402310',
+
+  // سلّم الزيتوني (accent-2 ramp)
+  accent2_100: '#f0fae1',
+  accent2_200: '#e1eecc',
+  accent2_300: '#ccdbb2',
+  accent2_400: '#aebf92',
+  accent2_500: '#8fa073',
+  accent2_600: '#728157',
+  accent2_700: '#56633f',
+  accent2_800: '#3d472b',   // الأخضر الداكن الأساسي للأزرار/الأفتار
+  accent2_900: '#272e1b',
+
+  white: '#fdfcfa',
+  ink: '#2b3220',           // أخضر مسود للنصوص فوق الفاتح
+  divider: 'rgba(32,30,29,0.16)',   // --color-divider
+  divider8: 'rgba(32,30,29,0.08)',
+};
+
+// ألوان ثابتة لشاشات الدخول — لا تتأثر بلون الشركة أبداً
+export const authColors = {
+  blue: '#4947ae',          // لون اللوقو الأساسي (بنفسجي/أزرق)
+  blueDark: '#2f2e71',      // غامق
+  blueLight: '#7675c2',     // فاتح
+  ink: '#363582',           // نص داكن
+  accent: '#5b59b6',        // بديل accent
+  accent2_100: '#e9e8f5',
+  accent2_500: '#5b59b6',
+  accent2_700: '#4947ae',
+  accent2_800: '#3a388b',
+  accent2_900: '#2b2a68',
+  accent100: '#ececf6',
+  accent400: '#9190ce',
+  accent700: '#4947ae',
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  تطبيق ألوان الشركة (من Odoo) على التطبيق ديناميكياً
+// ═══════════════════════════════════════════════════════════════
+
+// حوّل hex إلى {r,g,b}
+function hexToRgb(hex) {
+  if (!hex) return null;
+  let h = hex.replace('#', '').trim();
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  if (h.length !== 6) return null;
+  const n = parseInt(h, 16);
+  if (isNaN(n)) return null;
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+  const c = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+  return '#' + c(r) + c(g) + c(b);
+}
+// امزج لوناً مع الأبيض (نسبة t نحو الأبيض) أو الأسود (t سالب)
+function tint(rgb, t) {
+  if (t >= 0) return { r: rgb.r + (255 - rgb.r) * t, g: rgb.g + (255 - rgb.g) * t, b: rgb.b + (255 - rgb.b) * t };
+  const k = 1 + t; // t سالب → نحو الأسود
+  return { r: rgb.r * k, g: rgb.g * k, b: rgb.b * k };
+}
+// ولّد سلّم كامل من لون أساسي
+function ramp(hex, prefix, target) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return;
+  const steps = { 100: 0.9, 200: 0.72, 300: 0.5, 400: 0.26, 500: 0.05, 600: -0.15, 700: -0.35, 800: -0.52, 900: -0.68 };
+  Object.entries(steps).forEach(([k, t]) => {
+    const c = tint(rgb, t);
+    target[`${prefix}${k}`] = rgbToHex(c.r, c.g, c.b);
+  });
+}
+
+// خريطة ألوان Odoo القياسية (color integer index → hex)
+// مطابقة للوحة ألوان Odoo (o_colorlist)
+const ODOO_COLOR_MAP = {
+  0: '#7C7BAD', // افتراضي (أرجواني Odoo)
+  1: '#F06050', // أحمر
+  2: '#F4A460', // برتقالي
+  3: '#F7CD1F', // أصفر
+  4: '#6CC1ED', // سماوي / أزرق فاتح
+  5: '#814968', // بنفسجي
+  6: '#EB7E7F', // وردي فاتح
+  7: '#2C8397', // تركوازي
+  8: '#475577', // أزرق داكن
+  9: '#D6145F', // وردي غامق
+  10: '#30C381', // أخضر
+  11: '#7C7BAD', // أرجواني
+};
+
+// طبّق ألوان الشركة على كائن colors (mutate — تنعكس على كل الشاشات)
+// primary/secondary: نصوص hex اختيارية | colorIndex: رقم فهرس Odoo اختياري
+export function applyCompanyColors(primary, secondary, colorIndex) {
+  // لو فيه لون واحد فقط (فهرس رقمي)، استخدمه كلون أساسي وثانوي معاً
+  let prim = hexToRgb(primary);
+  let sec = hexToRgb(secondary);
+
+  // إن لم يوجد hex واستُعمل الفهرس الرقمي
+  if (!prim && colorIndex != null && ODOO_COLOR_MAP[colorIndex]) {
+    const hex = ODOO_COLOR_MAP[colorIndex];
+    prim = hexToRgb(hex);
+    if (!sec) sec = hexToRgb(hex); // نفس اللون للثانوي إن لم يُحدّد
+    primary = hex;
+    if (!secondary) secondary = hex;
+  }
+
+  if (prim) {
+    colors.accent = primary;
+    ramp(primary, 'accent', colors);
+  }
+  if (sec) {
+    colors.accent2 = secondary;
+    ramp(secondary, 'accent2_', colors);
+    // ramp يولّد accent2_800 صحيحاً؛ نضبط ink ليطابقه
+    colors.ink = colors.accent2_800;
+  }
+  notifyThemeChange();
+}
+
+// أعد الألوان الافتراضية (عند الخروج)
+const DEFAULTS = { ...colors };
+export function resetColors() {
+  Object.assign(colors, DEFAULTS);
+  notifyThemeChange();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  نظام إشعار تغيّر الثيم — يجبر التطبيق على إعادة الرسم بالكامل
+// ═══════════════════════════════════════════════════════════════
+let _themeListeners = [];
+export function onThemeChange(fn) {
+  _themeListeners.push(fn);
+  return () => { _themeListeners = _themeListeners.filter((f) => f !== fn); };
+}
+export function notifyThemeChange() {
+  _themeListeners.forEach((fn) => { try { fn(); } catch (e) {} });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  makeStyles — أنماط ديناميكية تُعاد بناؤها عند تغيّر لون الشركة
+//  الاستخدام: const styles = makeStyles(() => ({ ... }))
+//  ثم داخل المكوّن تُقرأ styles مباشرة (الكائن يُحدّث نفسه mutate)
+// ═══════════════════════════════════════════════════════════════
+export function makeStyles(builder) {
+  let obj;
+  try {
+    obj = StyleSheet.create(builder());
+  } catch (e) {
+    obj = {};
+  }
+  // أعد البناء عند تغيّر الثيم (mutate نفس الكائن ليبقى المرجع صالحاً)
+  onThemeChange(() => {
+    try {
+      const fresh = StyleSheet.create(builder());
+      Object.keys(obj).forEach((k) => { delete obj[k]; });
+      Object.assign(obj, fresh);
+    } catch (e) {}
+  });
+  return obj;
+}
+
+// المسافات الدقيقة من التصميم
+export const space = { s1: 4.4, s2: 8.8, s3: 13.2, s4: 17.6, s6: 26.4, s8: 35.2 };
+
+// نصف الأقطار
+export const radius = { sm: 8, md: 16, lg: 28, card: 32, pill: 999 };
+
+// الخطوط
+export const fonts = {
+  heading: 'Caprasimo',            // العناوين h1..h4
+  arabic: 'IBMPlexArabic',         // النص العربي
+  arabicSemi: 'IBMPlexArabic-Medium',
+  arabicBold: 'IBMPlexArabic-Bold',
+  latin: 'Figtree',                // اللاتيني/الأرقام
+  latinSemi: 'Figtree-SemiBold',
+  latinBold: 'Figtree-Bold',
+};
+
+export const shadow = {
+  sm: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.14, shadowRadius: 2, elevation: 1 },
+  md: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.16, shadowRadius: 10, elevation: 3 },
+  lg: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.22, shadowRadius: 32, elevation: 8 },
+  card: { shadowColor: '#2e2b25', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 2 },
+};
+
+export default { colors, space, radius, fonts, shadow };

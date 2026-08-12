@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Contracting Lite",
+    "slug": "contracting-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4947ae"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        "NSCameraUsageDescription": "يستخدم التطبيق الكاميرا لمسح باركود الدخول وإرفاق صور بالتقارير.",
+        "NSPhotoLibraryUsageDescription": "يستخدم التطبيق المعرض لإرفاق صور بالتقارير اليومية.",
+        "NSLocationWhenInUseUsageDescription": "يستخدم التطبيق موقعك لحساب المسافة إلى مواقع المشاريع على الخريطة."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#4947ae"
+      },
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "extra": {
+      "eas": {}
+    },
+    "plugins": [
+      "expo-image-picker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "يسمح للتطبيق باستخدام الكاميرا لمسح الباركود."
+        }
+      ]
+    ]
+  }
+}
