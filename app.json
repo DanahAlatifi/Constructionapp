@@ -14,13 +14,16 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.plustech.contractinglite",
+      "buildNumber": "1.0.0",
       "infoPlist": {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         },
         "NSCameraUsageDescription": "يستخدم التطبيق الكاميرا لمسح باركود الدخول وإرفاق صور بالتقارير.",
         "NSPhotoLibraryUsageDescription": "يستخدم التطبيق المعرض لإرفاق صور بالتقارير اليومية.",
-        "NSLocationWhenInUseUsageDescription": "يستخدم التطبيق موقعك لحساب المسافة إلى مواقع المشاريع على الخريطة."
+        "NSLocationWhenInUseUsageDescription": "يستخدم التطبيق موقعك لحساب المسافة إلى مواقع المشاريع على الخريطة.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -30,13 +33,16 @@
       },
       "usesCleartextTraffic": true,
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "f7089925-50bc-4795-932d-7555bffd6ae7"
+      }
     },
     "plugins": [
       "expo-image-picker",
